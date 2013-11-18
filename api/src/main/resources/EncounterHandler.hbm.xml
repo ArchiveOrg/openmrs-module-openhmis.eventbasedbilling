@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+		"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+		"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.openmrs.module.openhmis.eventbasedbilling.api.model">
+	<joined-subclass name="EncounterHandler" extends="org.openmrs.module.openhmis.eventbasedbilling.api.IBillingHandler"
+		table="eventbill_handler_encounter">
+		<key column="handler_id" />
+		
+		<many-to-one name="encounterType" class="org.openmrs.EncounterType" column="encounter_type_id" not-null="true" />
+		
+		<set name="associatedItems" lazy="true" table="eventbill_handler_encounter_items"
+			cascade="all-delete-orphan">
+			<key column="handler_id" />
+			<many-to-many column="item_id" class="org.openmrs.module.openhmis.inventory.api.model.Item" />
+		</set>
+
+	</joined-subclass>
+</hibernate-mapping>

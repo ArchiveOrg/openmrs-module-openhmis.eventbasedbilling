@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+	<eventbill_handler handler_id="0" name="test Encounter Handler" associator_id="0" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="ef93c695-ac43-450a-93f8-4b2b4d50a3c8" />
+	<eventbill_handler_encounter handler_id="0" encounter_type_id="1" />
+	<eventbill_handler_encounter_items handler_id="0" item_id="0" />
+	
+	<eventbill_associator associator_id="0" name="Create New Bill" associator_type="SIMPLE_NEW" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="ea2999a6-2218-47e4-8cb4-e08356332d9b" />
+</dataset>
