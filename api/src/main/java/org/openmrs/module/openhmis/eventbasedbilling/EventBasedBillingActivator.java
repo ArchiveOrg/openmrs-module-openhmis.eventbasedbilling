@@ -52,7 +52,7 @@ public class EventBasedBillingActivator implements ModuleActivator {
 	 */
 	public void started() {
 		log.info("Event Based Billing Module started");
-		EventHelper.bindHandlers();
+		EventHelper.bindAllHandlers();
 	}
 	
 	/**
@@ -60,7 +60,7 @@ public class EventBasedBillingActivator implements ModuleActivator {
 	 */
 	public void willStop() {
 		log.info("Stopping Event Based Billing Module");
-		EventHelper.unbindHandlers();
+		EventHelper.unbindAllHandlers();
 	}
 	
 	/**

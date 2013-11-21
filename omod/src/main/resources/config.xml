@@ -7,7 +7,7 @@
 	<name>${project.parent.name}</name>
 	<version>${project.parent.version}</version>
 	<package>${project.parent.groupId}.${project.parent.artifactId}</package>
-	<author>shortend</author>
+	<author>Daniel Shorten</author>
 	<description>
 		${project.parent.description}
 	</description>
@@ -15,6 +15,10 @@
 	<require_version>${openMRSVersion}</require_version>
 	<!-- / Module Properties -->
 
+	<require_modules>
+		<require_module version="2.0">org.openmrs.module.openhmis.commons</require_module>
+		<require_module version="2.0">org.openmrs.module.openhmis.cashier</require_module>
+	</require_modules>
 	
 	<!-- Module Activator -->
 	<activator>${project.parent.groupId}.${project.parent.artifactId}.EventBasedBillingActivator</activator>
@@ -28,7 +32,10 @@
 	
 	<!-- Maps hibernate file's, if present -->
 	<mappingFiles>
-				
+		BillAssociator.hbm.xml
+		BillingHandler.hbm.xml
+		EncounterHandler.hbm.xml
+		SimpleNewBillAssociator.hbm.xml
 	</mappingFiles>
 
 	<!-- Internationalization -->
