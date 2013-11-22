@@ -82,6 +82,13 @@
 			<artifactId>openhmis.cashier-api</artifactId>
 			<type>jar</type>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>openhmis.billableobjects-api</artifactId>
+			<type>jar</type>
+		</dependency>
+		
 				
 	</dependencies>
 	

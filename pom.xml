@@ -106,6 +106,7 @@
 				<artifactId>openhmis.inventory-api</artifactId>
 				<version>1.0.0-SNAPSHOT</version>
 				<type>jar</type>
+				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
@@ -113,6 +114,15 @@
 				<artifactId>openhmis.cashier-api</artifactId>
 				<version>2.0.0-SNAPSHOT</version>
 				<type>jar</type>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.openmrs.module</groupId>
+				<artifactId>openhmis.billableobjects-api</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+				<type>jar</type>
+				<scope>provided</scope>
 			</dependency>
 
 		</dependencies>

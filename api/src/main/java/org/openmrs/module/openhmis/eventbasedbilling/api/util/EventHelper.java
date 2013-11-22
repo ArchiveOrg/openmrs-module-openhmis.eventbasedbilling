@@ -5,9 +5,9 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.openmrs.api.context.Context;
 import org.openmrs.event.Event;
-import org.openmrs.module.openhmis.eventbasedbilling.api.IBillingHandler;
-import org.openmrs.module.openhmis.eventbasedbilling.api.IBillingHandlerDataService;
-
+import org.openmrs.module.openhmis.billableobjects.api.IBillingHandler;
+import org.openmrs.module.openhmis.billableobjects.api.IBillingHandlerDataService;
+import org.openmrs.module.openhmis.billableobjects.api.util.BillsFor;
 
 public class EventHelper {
 	private static final Logger logger = Logger.getLogger(EventHelper.class);

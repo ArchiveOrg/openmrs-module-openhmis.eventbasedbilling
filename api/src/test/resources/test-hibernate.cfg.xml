@@ -24,16 +24,6 @@
 		<property name="use_sql_comments">true</property>
 		-->
 
-		<mapping resource="BillingHandler.hbm.xml" />
-		<mapping resource="EncounterHandler.hbm.xml" />
-		<mapping resource="BillAssociator.hbm.xml" />
-		<mapping resource="SimpleNewBillAssociator.hbm.xml" />
-		
-		<!-- Inventory dependencies -->
-		<mapping resource="InvItem.hbm.xml" />
-		<mapping resource="InvDepartment.hbm.xml" />
-		<mapping resource="InvCategory.hbm.xml" />
-<!-- 		<mapping resource="InvStockRoom.hbm.xml" /> -->
 
 	</session-factory>
 </hibernate-configuration>
