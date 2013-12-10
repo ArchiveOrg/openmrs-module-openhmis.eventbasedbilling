@@ -1,40 +1,58 @@
 package org.openmrs.module.openhmis.eventbasedbilling.api.util;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.openmrs.api.context.Context;
 import org.openmrs.event.Event;
-import org.openmrs.module.openhmis.billableobjects.api.IBillingHandler;
-import org.openmrs.module.openhmis.billableobjects.api.IBillingHandlerDataService;
-import org.openmrs.module.openhmis.billableobjects.api.util.BillsFor;
+import org.openmrs.event.Event.Action;
+import org.openmrs.module.DaemonToken;
+import org.openmrs.module.openhmis.billableobjects.api.model.IBillableObject;
+import org.openmrs.module.openhmis.billableobjects.api.model.IBillingHandler;
+import org.openmrs.module.openhmis.billableobjects.api.type.BaseBillableObject;
+import org.openmrs.module.openhmis.billableobjects.api.util.BillableObjectsHelper;
+import org.openmrs.module.openhmis.billableobjects.api.util.BillingHandlerHelper;
 
 public class EventHelper {
 	private static final Logger logger = Logger.getLogger(EventHelper.class);
+	private static DaemonToken daemonToken;
+	private static Set<BillingHandlerEventListener> boundListeners = new HashSet<BillingHandlerEventListener>();
 	
 	/**
 	 * @should bind all existing handlers
 	 */
-	public static void bindAllHandlers() {
-		List<IBillingHandler> handlers = Context.getService(IBillingHandlerDataService.class).getAll();
-		for (IBillingHandler handler : handlers) {
-			BillsFor annotation = handler.getClass().getAnnotation(BillsFor.class);
-			if (annotation == null) {
-				logger.warn(String.format("%s class %s for handler \"%s\" does not specify handled classes using %s annotation: skipping event binding.",
-						IBillingHandler.class.getSimpleName(),
-						handler.getClass().getSimpleName(),
-						handler.getName(),
-						BillsFor.class.getSimpleName()));
-				continue;
-			}
-			for (Class<?> handledClass : annotation.value()) {
-				Event.subscribe(handledClass, Event.Action.CREATED.toString(), handler);
+	public static void bindListenerForAllHandlers() {
+		unbindListenerForAllHandlers();
+		for (Class<?> handledClass : BillingHandlerHelper.getActivelyHandledClasses()) {
+			Set<IBillingHandler<?>> handlers = BillingHandlerHelper.getHandlersForClassName(handledClass.getName());
+			for (IBillingHandler handler : handlers) {
+				BillingHandlerEventListener listener = new BillingHandlerEventListener(handler, daemonToken);
+				boundListeners.add(listener);
+				Class<? extends IBillableObject> billableObjectType = BillableObjectsHelper.getBillableObjectTypeForClassName(handledClass.getName());
+				Event.subscribe(
+						billableObjectType,
+						Action.CREATED.toString(),
+						listener
+				);
 			}
 		}
 	}
 	
-	public static void unbindAllHandlers() {
+	public static void unbindListenerForAllHandlers() {
+		BillingHandlerEventListener[] listeners = new BillingHandlerEventListener[boundListeners.size()];
+		boundListeners.toArray(listeners);
+		for (BillingHandlerEventListener listener : listeners) {
+			Event.unsubscribe(
+					BaseBillableObject.class,
+					Action.CREATED,
+					listener
+			);
+			boundListeners.remove(listener);
+		}
 		
 	}
-	
+
+	public static void setDaemonToken(DaemonToken daemonToken) {
+		EventHelper.daemonToken = daemonToken;
+	}
 }

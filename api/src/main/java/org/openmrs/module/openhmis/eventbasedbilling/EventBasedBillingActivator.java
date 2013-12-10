@@ -16,13 +16,15 @@ package org.openmrs.module.openhmis.eventbasedbilling;
 
 import org.apache.commons.logging.Log; 
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.module.DaemonToken;
+import org.openmrs.module.DaemonTokenAware;
 import org.openmrs.module.ModuleActivator;
 import org.openmrs.module.openhmis.eventbasedbilling.api.util.EventHelper;
 
 /**
  * This class contains the logic that is run every time this module is either started or stopped.
  */
-public class EventBasedBillingActivator implements ModuleActivator {
+public class EventBasedBillingActivator implements ModuleActivator, DaemonTokenAware {
 	
 	protected Log log = LogFactory.getLog(getClass());
 		
@@ -52,7 +54,7 @@ public class EventBasedBillingActivator implements ModuleActivator {
 	 */
 	public void started() {
 		log.info("Event Based Billing Module started");
-		EventHelper.bindAllHandlers();
+		EventHelper.bindListenerForAllHandlers();
 	}
 	
 	/**
@@ -60,7 +62,7 @@ public class EventBasedBillingActivator implements ModuleActivator {
 	 */
 	public void willStop() {
 		log.info("Stopping Event Based Billing Module");
-		EventHelper.unbindAllHandlers();
+		EventHelper.unbindListenerForAllHandlers();
 	}
 	
 	/**
@@ -68,6 +70,11 @@ public class EventBasedBillingActivator implements ModuleActivator {
 	 */
 	public void stopped() {
 		log.info("Event Based Billing Module stopped");
+	}
+
+	@Override
+	public void setDaemonToken(DaemonToken token) {
+		EventHelper.setDaemonToken(token);
 	}
 		
 }

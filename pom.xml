@@ -83,6 +83,15 @@
 				<artifactId>event-api</artifactId>
 				<version>2.1</version>
 				<type>jar</type>
+				<scope>provided</scope>
+			</dependency>
+			
+			<dependency>
+				<groupId>org.openmrs.module</groupId>
+				<artifactId>webservices.rest-omod</artifactId>
+				<version>2.0</version>
+				<type>jar</type>
+				<scope>provided</scope>
 			</dependency>
 			
 			<dependency>
@@ -99,6 +108,14 @@
 				<version>2.0.0-SNAPSHOT</version>
 				<type>test-jar</type>
 				<scope>test</scope>
+			</dependency>
+			
+			<dependency>
+				<groupId>org.openmrs.module</groupId>
+				<artifactId>openhmis.backboneforms-omod</artifactId>
+				<version>2.0.0-SNAPSHOT</version>
+				<type>jar</type>
+				<scope>provided</scope>
 			</dependency>
 			
 			<dependency>
