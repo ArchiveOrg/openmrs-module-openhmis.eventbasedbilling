@@ -44,7 +44,7 @@ public class AdminList extends AdministrationSectionExt {
 	 */
 	public Map<String, String> getLinks() {
 		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
-		map.put("/module/openhmis.eventbasedbilling/manage.form", "openhmis.eventbasedbilling.manage");
+		map.put("/module/openhmis/eventbasedbilling/associators.form", "openhmis.eventbasedbilling.admin.associators");
 		return map;
 	}
 	

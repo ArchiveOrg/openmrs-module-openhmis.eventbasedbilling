@@ -1,4 +1,4 @@
 (function() {
-	openhmis.url.eventbillingBase = "eventbasedbilling/";
-	openhmis.url.eventbilling = openhmis.url.resources + openhmis.url.eventbillingBase;
+	openhmis.url.eventbillBase = "eventbasedbilling/";
+	openhmis.url.eventbill = openhmis.url.resources + openhmis.url.eventbillBase;
 })();

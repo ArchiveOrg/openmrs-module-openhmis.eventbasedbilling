@@ -9,7 +9,7 @@ define(
             meta: {
                 name: __("Bill Associator"),
                 openmrsType: 'metadata',
-                restUrl: 'v2/billableobjects/simplenewbillassociators'
+                restUrl: 'v2/eventbasedbilling/simplenewbillassociators'
             },
 
             schema: {

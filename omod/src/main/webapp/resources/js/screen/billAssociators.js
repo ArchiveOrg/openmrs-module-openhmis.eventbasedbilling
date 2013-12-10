@@ -4,7 +4,7 @@ curl(
         openhmis.url.backboneBase + 'js/lib/jquery',
         openhmis.url.backboneBase + 'js/openhmis',
         openhmis.url.backboneBase + 'js/view/generic',
-        openhmis.url.billableobjBase + 'js/model/billAssociator',
+        openhmis.url.eventbillBase + 'js/model/billAssociator',
     ],
     function($, openhmis) {
         $(function() {

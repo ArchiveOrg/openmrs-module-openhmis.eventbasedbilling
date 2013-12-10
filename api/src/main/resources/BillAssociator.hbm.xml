@@ -2,8 +2,8 @@
 <!DOCTYPE hibernate-mapping PUBLIC
 		"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 		"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<hibernate-mapping package="org.openmrs.module.openhmis.billableobjects.api.model">
-	<class name="BaseBillAssociator" table="billableobj_associator">
+<hibernate-mapping package="org.openmrs.module.openhmis.eventbasedbilling.api.model">
+	<class name="BaseBillAssociator" table="eventbill_associator">
 		<cache usage="read-write"/>
 
 		<id name="id" type="int" column="associator_id">
