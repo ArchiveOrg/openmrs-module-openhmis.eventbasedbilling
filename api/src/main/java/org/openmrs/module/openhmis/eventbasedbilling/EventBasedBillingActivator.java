@@ -19,6 +19,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.DaemonToken;
 import org.openmrs.module.DaemonTokenAware;
 import org.openmrs.module.ModuleActivator;
+import org.openmrs.module.openhmis.eventbasedbilling.api.BillingHandlerEventListenerFactory;
 import org.openmrs.module.openhmis.eventbasedbilling.api.util.EventHelper;
 
 /**
@@ -74,7 +75,7 @@ public class EventBasedBillingActivator implements ModuleActivator, DaemonTokenA
 
 	@Override
 	public void setDaemonToken(DaemonToken token) {
-		EventHelper.setDaemonToken(token);
+		BillingHandlerEventListenerFactory.setDaemonToken(token);
 	}
 		
 }

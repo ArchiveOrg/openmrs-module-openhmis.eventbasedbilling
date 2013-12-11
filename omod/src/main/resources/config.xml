@@ -23,6 +23,28 @@
 	<!-- Module Activator -->
 	<activator>${project.parent.groupId}.${project.parent.artifactId}.EventBasedBillingActivator</activator>
 	
+	<!-- Global Properties -->
+	<globalProperty>
+		<property>${project.parent.artifactId}.associatorId</property>
+		<description>ID of the default bill associator to use for automatic billing</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>${project.parent.artifactId}.isEnabled</property>
+		<description>Set to true to enable automatic event-based bill generation</description>
+	</globalProperty>
+	
+	<!-- Privileges -->
+	<privilege>
+		<name>View Event-Based Billing</name>
+		<description>View details of event-based billing</description>
+	</privilege>
+	
+	<privilege>
+		<name>Manage Event-Based Billing</name>
+		<description>Configure event-based billing options</description>
+	</privilege>
+
 	
 	<!-- Adds link to admin page -->
 	<extension>

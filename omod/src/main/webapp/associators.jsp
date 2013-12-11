@@ -16,6 +16,7 @@
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="template/localHeader.jsp"%>
 <openmrs:htmlInclude file="/moduleResources/openhmis/eventbasedbilling/js/screen/billAssociators.js" />
+<%@ include file="template/linksHeader.jsp"%>
 
 <h2>
     <spring:message code="openhmis.eventbasedbilling.admin.associators" />
