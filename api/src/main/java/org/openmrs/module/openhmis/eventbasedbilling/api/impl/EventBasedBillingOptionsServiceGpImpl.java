@@ -7,6 +7,8 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.impl.BaseOpenmrsService;
+import org.openmrs.module.openhmis.cashier.api.ICashPointService;
+import org.openmrs.module.openhmis.cashier.api.model.CashPoint;
 import org.openmrs.module.openhmis.eventbasedbilling.api.IBillAssociatorDataService;
 import org.openmrs.module.openhmis.eventbasedbilling.api.IEventBasedBillingOptionsService;
 import org.openmrs.module.openhmis.eventbasedbilling.api.model.EventBasedBillingOptions;
@@ -20,17 +22,23 @@ public class EventBasedBillingOptionsServiceGpImpl extends BaseOpenmrsService
 	private static final Logger logger = Logger.getLogger(EventBasedBillingOptionsServiceGpImpl.class);
 	private AdministrationService adminService;
 	private IBillAssociatorDataService associatorService;
+	private ICashPointService cashPointService;
 
 	@Autowired
-	public EventBasedBillingOptionsServiceGpImpl(AdministrationService adminService, IBillAssociatorDataService associatorService) {
+	public EventBasedBillingOptionsServiceGpImpl(
+			AdministrationService adminService,
+			IBillAssociatorDataService associatorService,
+			ICashPointService cashPointService) {
 		this.adminService = adminService;
 		this.associatorService = associatorService;
+		this.cashPointService = cashPointService;
 	}
 
 	@Override
 	public EventBasedBillingOptions getOptions() {
 		EventBasedBillingOptions options = new EventBasedBillingOptions();
 		options.setBillAssociator(loadAssociator());
+		options.setCashPoint(loadCashPoint());
 		options.setIsEnabled(loadIsEnabled());
 		return options;
 	}
@@ -55,7 +63,13 @@ public class EventBasedBillingOptionsServiceGpImpl extends BaseOpenmrsService
 		else
 			associatorIdProp.setPropertyValue(options.getBillAssociator().getId().toString());
 		
-		adminService.saveGlobalProperties(Arrays.asList(isEnabledProp, associatorIdProp));
+		GlobalProperty cashPointIdProp = new GlobalProperty(EventBasedBillingWebConstants.CASH_POINT_ID_PROPERTY);
+		if (options.getCashPoint() == null || options.getCashPoint().getId() == null)
+			cashPointIdProp.setPropertyValue("");
+		else
+			cashPointIdProp.setPropertyValue(options.getCashPoint().getId().toString());
+		
+		adminService.saveGlobalProperties(Arrays.asList(isEnabledProp, associatorIdProp, cashPointIdProp));
 	}
 	
 	private IBillAssociator loadAssociator() {
@@ -76,7 +90,26 @@ public class EventBasedBillingOptionsServiceGpImpl extends BaseOpenmrsService
 		}
 		return associator;
 	}
-	
+
+	private CashPoint loadCashPoint() {
+		Integer cashPointId;
+		try {
+			cashPointId = Integer.parseInt(adminService.getGlobalProperty(EventBasedBillingWebConstants.CASH_POINT_ID_PROPERTY));
+		}
+		catch (Exception e) {
+			return null;
+		}
+		
+		CashPoint cashPoint = null;
+		try {
+			cashPoint = cashPointService.getById(cashPointId);
+		}
+		catch (APIException e) {
+			logger.error("Failed to load configured cash point with ID " + cashPointId + ".");
+		}
+		return cashPoint;
+	}
+
 	private boolean loadIsEnabled() {
 		boolean isEnabled = false;
 		try {

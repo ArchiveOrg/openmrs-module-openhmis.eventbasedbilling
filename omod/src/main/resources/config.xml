@@ -30,6 +30,11 @@
 	</globalProperty>
 
 	<globalProperty>
+		<property>${project.parent.artifactId}.cashPointId</property>
+		<description>ID of the default cash point to use for automatic billing</description>
+	</globalProperty>
+
+	<globalProperty>
 		<property>${project.parent.artifactId}.isEnabled</property>
 		<description>Set to true to enable automatic event-based bill generation</description>
 	</globalProperty>

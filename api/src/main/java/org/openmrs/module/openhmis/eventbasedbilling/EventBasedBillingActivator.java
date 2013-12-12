@@ -16,10 +16,12 @@ package org.openmrs.module.openhmis.eventbasedbilling;
 
 import org.apache.commons.logging.Log; 
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.DaemonToken;
 import org.openmrs.module.DaemonTokenAware;
 import org.openmrs.module.ModuleActivator;
 import org.openmrs.module.openhmis.eventbasedbilling.api.BillingHandlerEventListenerFactory;
+import org.openmrs.module.openhmis.eventbasedbilling.api.IEventBasedBillingOptionsService;
 import org.openmrs.module.openhmis.eventbasedbilling.api.util.EventHelper;
 
 /**
@@ -55,7 +57,8 @@ public class EventBasedBillingActivator implements ModuleActivator, DaemonTokenA
 	 */
 	public void started() {
 		log.info("Event Based Billing Module started");
-		EventHelper.bindListenerForAllHandlers();
+		if (Context.getService(IEventBasedBillingOptionsService.class).getOptions().isEnabled())
+			EventHelper.bindListenerForAllHandlers();
 	}
 	
 	/**

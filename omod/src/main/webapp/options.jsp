@@ -29,10 +29,20 @@
 	  </tr>
 	  <tr>
 	   <td><label for="defaultAssociator">Default Bill Associator</label></td>
-	   <td><select name="associatorId">
+	   <td><select name="associatorId" id="defaultAssociator">
 	   		<c:forEach items="${associators}" var="associator">
 	   			<option value="<c:out value="${associator.id}"/>"<c:if test="${associator.id == options.billAssociator.id}"> selected</c:if>>
 	   				<c:out value="${associator.name}"/>
+	   			</option>
+	   		</c:forEach>
+	   </select></td>
+	  </tr>
+	  <tr>
+	   <td><label for="defaultCashPoint">Default Cash Point</label></td>
+	   <td><select name="cashPointId" id="defaultCashPoint">
+	   		<c:forEach items="${cashPoints}" var="cashPoint">
+	   			<option value="<c:out value="${cashPoint.id}"/>"<c:if test="${cashPoint.id == options.cashPoint.id}"> selected</c:if>>
+	   				<c:out value="${cashPoint.name}"/>
 	   			</option>
 	   		</c:forEach>
 	   </select></td>

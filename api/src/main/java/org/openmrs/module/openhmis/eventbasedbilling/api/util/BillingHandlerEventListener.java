@@ -12,6 +12,9 @@ import javax.jms.Message;
 
 import org.apache.log4j.Logger;
 import org.openmrs.OpenmrsObject;
+import org.openmrs.Patient;
+import org.openmrs.Provider;
+import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
@@ -22,6 +25,11 @@ import org.openmrs.module.openhmis.billableobjects.api.model.IBillableObject;
 import org.openmrs.module.openhmis.billableobjects.api.model.IBillingHandler;
 import org.openmrs.module.openhmis.billableobjects.api.util.BillableObjectEventListener;
 import org.openmrs.module.openhmis.cashier.api.model.BillLineItem;
+import org.openmrs.module.openhmis.cashier.api.model.CashPoint;
+import org.openmrs.module.openhmis.eventbasedbilling.api.IEventBasedBillingOptionsService;
+import org.openmrs.module.openhmis.eventbasedbilling.api.impl.BillAssociationContext;
+import org.openmrs.module.openhmis.eventbasedbilling.api.model.EventBasedBillingOptions;
+import org.openmrs.module.openhmis.eventbasedbilling.api.model.IBillAssociator;
 
 public class BillingHandlerEventListener<T extends OpenmrsObject> implements EventListener {
 	private static final Logger logger = Logger.getLogger(BillableObjectEventListener.class);
@@ -65,12 +73,16 @@ public class BillingHandlerEventListener<T extends OpenmrsObject> implements Eve
 			Set<IBillingHandler<T>> handlers = billableObjectClassNameToHandlerSetMap.get(classname);
 			if (handlers != null) {
 				for (IBillingHandler<T> handler : handlers) {
-					Daemon.runInDaemonThread(new HandlerRunner(handler, message), daemonToken);					
+//					try {
+//						Daemon.runInDaemonThread(new HandlerRunner(handler, message), daemonToken).join();
+//					}
+//					catch (InterruptedException e) { /* Continue after thread has finished */ }
+					Daemon.runInDaemonThread(new HandlerRunner(handler, message), daemonToken);
 				}
 			}
 		}
 		catch (JMSException e) {
-			e.printStackTrace();
+			logger.error("Error reading JMS message!");
 		}
 	}
 		
@@ -92,9 +104,43 @@ public class BillingHandlerEventListener<T extends OpenmrsObject> implements Eve
 				List<BillLineItem> lineItems = handler.handleObject(billableObject.getObject());
 				if (lineItems == null) // not handled
 					return;
+				EventBasedBillingOptions options = Context.getService(IEventBasedBillingOptionsService.class).getOptions();
+				IBillAssociator associator = options.getBillAssociator();
+				CashPoint cashPoint = options.getCashPoint();
+				if (options.isEnabled()) {
+					if (associator == null)
+						logger.error("Automatic billing is enabled but no default associator is configured!");
+					else if (cashPoint == null)
+						logger.error("Automatic billing is enabled but no default cash point is configured!");
+					else {
+						// Find provider
+						User user = Context.getAuthenticatedUser();
+						Provider provider = null;
+						Exception exception = null;
+						try {
+							provider = (Provider) Context.getProviderService().getProvidersByPerson(user.getPerson()).toArray()[0];
+						}
+						catch (Exception e) { exception = e; }
+						if (provider == null)
+							throw new APIException("Failed to determing provider for automatic billing process.", exception);
+
+						// Check Patient
+						Patient patient = billableObject.getAssociatedPatient();
+						if (patient == null)
+							throw new APIException("Failed to determing patient for billable object.");							
+						
+						BillAssociationContext context = new BillAssociationContext();
+						context.setProvider(provider);
+						context.setCashPoint(cashPoint);
+						context.setPatient(patient);
+						context.setBillableObject(billableObject);
+						
+						associator.associateItemsToBill(lineItems, context);
+					}
+				}
 			}
 			catch (JMSException e) {
-				e.printStackTrace();
+				logger.error("Error reading JMS message!");
 			}
 			
 		}

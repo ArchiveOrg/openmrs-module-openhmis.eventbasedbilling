@@ -5,11 +5,12 @@ curl(
         openhmis.url.backboneBase + 'js/openhmis',
         openhmis.url.backboneBase + 'js/view/generic',
         openhmis.url.eventbillBase + 'js/model/billAssociator',
+        openhmis.url.eventbillBase + 'js/view/editors',
     ],
     function($, openhmis) {
         $(function() {
             openhmis.startAddEditScreen(openhmis.BillAssociator, {
-                listFields: ['name', 'description']
+                listFields: ['name', 'description', 'type']
             });
         });
     }

@@ -17,6 +17,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.openhmis.cashier.api.ICashPointService;
+import org.openmrs.module.openhmis.cashier.api.model.CashPoint;
 import org.openmrs.module.openhmis.eventbasedbilling.api.IBillAssociatorDataService;
 import org.openmrs.module.openhmis.eventbasedbilling.api.IEventBasedBillingOptionsService;
 import org.openmrs.module.openhmis.eventbasedbilling.api.model.EventBasedBillingOptions;
@@ -39,11 +41,13 @@ public class  EventBasedBillingOptionsController {
 	public void options(ModelMap model) {
 		model.addAttribute("options", Context.getService(IEventBasedBillingOptionsService.class).getOptions());
 		model.addAttribute("associators", Context.getService(IBillAssociatorDataService.class).getAll());
+		model.addAttribute("cashPoints", Context.getService(ICashPointService.class).getAll());
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
 	public String save_options(@RequestParam(value = "isEnabled", required=false) String isEnabled,
-            @RequestParam(value = "associatorId", required=false) Integer associatorId) {
+            @RequestParam(value = "associatorId", required=false) Integer associatorId,
+            @RequestParam(value = "cashPointId", required=false) Integer cashPointId) {
 		IBillAssociator associator = null;
 		if (associatorId != null) {
 			try {
@@ -54,8 +58,19 @@ public class  EventBasedBillingOptionsController {
 			}
 		}
 
+		CashPoint cashPoint = null;
+		if (cashPointId != null) {
+			try {
+				cashPoint = Context.getService(ICashPointService.class).getById(cashPointId);
+			}
+			catch (Exception e) {
+				log.error("Failed to load cash point based on form parameters.");
+			}
+		}
+
 		EventBasedBillingOptions options = new EventBasedBillingOptions();
 		options.setBillAssociator(associator);
+		options.setCashPoint(cashPoint);
 		options.setIsEnabled(!StringUtils.isEmpty(isEnabled));
 		Context.getService(IEventBasedBillingOptionsService.class).saveOptions(options);
 		
