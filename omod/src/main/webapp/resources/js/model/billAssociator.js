@@ -22,13 +22,13 @@ define(
             meta: {
                 name: __("Bill Associator"),
                 openmrsType: 'metadata',
-                restUrl: 'v2/eventbasedbilling/billassociators'
+                restUrl: 'v2/eventbasedbilling/associators'
             },
 
             schema: {
             	type: {
                 	type: 'BillAssociatorTypeSelect',
-                	options: new openhmis.GenericCollection([], { model: openhmis.BillingHandlerType }),
+                	options: new openhmis.GenericCollection([], { model: openhmis.BillAssociatorType }),
                 	objRef: true
                 },
                 name: 'Text',
@@ -44,6 +44,19 @@ define(
                 return this.get('name');
             }
         });
+        
+        openhmis.SimpleNewBillAssociator = openhmis.BillAssociator.extend({
+            meta: {
+                name: __("Simple New Bill Associator"),
+                openmrsType: 'metadata',
+                restUrl: 'v2/eventbasedbilling/simplenewbillassociators'
+            },
+            
+            initialize: function(attrs, options) {
+            	this.set("type", "SimpleNewBillAssociator", { silent: true });
+            }
+        });
+
 
         return openhmis;
     }

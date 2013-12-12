@@ -11,6 +11,7 @@ import javax.jms.MapMessage;
 import javax.jms.Message;
 
 import org.apache.log4j.Logger;
+import org.openmrs.Auditable;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Patient;
 import org.openmrs.Provider;
@@ -24,12 +25,17 @@ import org.openmrs.module.openhmis.billableobjects.api.IBillableObjectDataServic
 import org.openmrs.module.openhmis.billableobjects.api.model.IBillableObject;
 import org.openmrs.module.openhmis.billableobjects.api.model.IBillingHandler;
 import org.openmrs.module.openhmis.billableobjects.api.util.BillableObjectEventListener;
+import org.openmrs.module.openhmis.billableobjects.api.util.BillingHandlerRecoverableException;
+import org.openmrs.module.openhmis.cashier.api.model.Bill;
 import org.openmrs.module.openhmis.cashier.api.model.BillLineItem;
 import org.openmrs.module.openhmis.cashier.api.model.CashPoint;
 import org.openmrs.module.openhmis.eventbasedbilling.api.IEventBasedBillingOptionsService;
 import org.openmrs.module.openhmis.eventbasedbilling.api.impl.BillAssociationContext;
 import org.openmrs.module.openhmis.eventbasedbilling.api.model.EventBasedBillingOptions;
 import org.openmrs.module.openhmis.eventbasedbilling.api.model.IBillAssociator;
+import org.openmrs.notification.Alert;
+import org.openmrs.notification.AlertRecipient;
+import org.openmrs.notification.MessageException;
 
 public class BillingHandlerEventListener<T extends OpenmrsObject> implements EventListener {
 	private static final Logger logger = Logger.getLogger(BillableObjectEventListener.class);
@@ -73,10 +79,6 @@ public class BillingHandlerEventListener<T extends OpenmrsObject> implements Eve
 			Set<IBillingHandler<T>> handlers = billableObjectClassNameToHandlerSetMap.get(classname);
 			if (handlers != null) {
 				for (IBillingHandler<T> handler : handlers) {
-//					try {
-//						Daemon.runInDaemonThread(new HandlerRunner(handler, message), daemonToken).join();
-//					}
-//					catch (InterruptedException e) { /* Continue after thread has finished */ }
 					Daemon.runInDaemonThread(new HandlerRunner(handler, message), daemonToken);
 				}
 			}
@@ -101,7 +103,14 @@ public class BillingHandlerEventListener<T extends OpenmrsObject> implements Eve
 				MapMessage mapMessage = (MapMessage) message;
 				String uuid = mapMessage.getString("uuid");
 				IBillableObject<T> billableObject = Context.getService(IBillableObjectDataService.class).getByUuid(uuid);
-				List<BillLineItem> lineItems = handler.handleObject(billableObject.getObject());
+				List<BillLineItem> lineItems;
+				Exception recoverableException = null;
+				try {
+					lineItems = handler.handleObject(billableObject.getObject());
+				} catch (BillingHandlerRecoverableException exception) {
+					recoverableException = exception;
+					lineItems = exception.getLineItems();
+				}
 				if (lineItems == null) // not handled
 					return;
 				EventBasedBillingOptions options = Context.getService(IEventBasedBillingOptionsService.class).getOptions();
@@ -116,13 +125,13 @@ public class BillingHandlerEventListener<T extends OpenmrsObject> implements Eve
 						// Find provider
 						User user = Context.getAuthenticatedUser();
 						Provider provider = null;
-						Exception exception = null;
+						Exception providerException = null;
 						try {
 							provider = (Provider) Context.getProviderService().getProvidersByPerson(user.getPerson()).toArray()[0];
 						}
-						catch (Exception e) { exception = e; }
+						catch (Exception e) { providerException = e; }
 						if (provider == null)
-							throw new APIException("Failed to determing provider for automatic billing process.", exception);
+							throw new APIException("Failed to determing provider for automatic billing process.", providerException);
 
 						// Check Patient
 						Patient patient = billableObject.getAssociatedPatient();
@@ -135,7 +144,27 @@ public class BillingHandlerEventListener<T extends OpenmrsObject> implements Eve
 						context.setPatient(patient);
 						context.setBillableObject(billableObject);
 						
-						associator.associateItemsToBill(lineItems, context);
+						Bill bill = associator.associateItemsToBill(lineItems, context);
+						
+						if (recoverableException != null) {
+							Alert alert = new Alert();
+							patient = bill.getPatient();
+							alert.setText(String.format("Warning - bill %s, patient %s: %s",
+								bill.getReceiptNumber(),
+								patient.getGivenName() + " " + patient.getFamilyName(),
+								recoverableException.getMessage()
+							));
+							try {
+								Auditable object = (Auditable) billableObject.getObject();
+								Set<AlertRecipient> set = new HashSet<AlertRecipient>();
+								set.add(new AlertRecipient(object.getCreator(), false));
+								alert.setRecipients(set);
+								Context.getAlertService().saveAlert(alert);
+							}
+							catch (ClassCastException e) {
+								logger.warn("");
+							}
+						}
 					}
 				}
 			}

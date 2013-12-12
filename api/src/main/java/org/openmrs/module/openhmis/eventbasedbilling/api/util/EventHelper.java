@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.openmrs.OpenmrsObject;
+import org.openmrs.api.APIException;
 import org.openmrs.event.Event;
 import org.openmrs.event.Event.Action;
 import org.openmrs.module.openhmis.billableobjects.api.model.IBillableObject;
@@ -25,6 +26,8 @@ public class EventHelper {
 			Set<IBillingHandler<?>> handlers = BillingHandlerHelper.getHandlersForClassName(handledClass.getName());
 			for (IBillingHandler handler : handlers) {
 				Class<? extends IBillableObject> billableObjectType = BillableObjectsHelper.getBillableObjectTypeForClassName(handledClass.getName());
+				if (billableObjectType == null)
+					throw new APIException("Couldn't find a class extending " + IBillableObject.class.getSimpleName() + " for " + handledClass.getSimpleName() + ".");
 				BillingHandlerEventListener<OpenmrsObject> listener = BillingHandlerEventListenerFactory.getInstance();
 				listener.registerHandler(billableObjectType.getName(), handler);
 				handledBillabledObjectClasses.add(billableObjectType);

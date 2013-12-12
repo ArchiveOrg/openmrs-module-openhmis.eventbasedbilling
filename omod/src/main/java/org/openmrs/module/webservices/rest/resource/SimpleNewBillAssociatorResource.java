@@ -17,7 +17,7 @@ import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingSubclassH
 import org.openmrs.module.webservices.rest.web.response.ResourceDoesNotSupportOperationException;
 
 @Resource(name = EventBasedBillingRestConstants.SIMPLE_NEW_ASSOCIATOR_RESOURCE, supportedClass = SimpleNewBillAssociator.class, supportedOpenmrsVersions = {"1.8.*", "1.9.*"})
-public class SimpleNewBillAssociatorResource extends BaseRestMetadataResource<BaseBillAssociator> implements
+public class SimpleNewBillAssociatorResource extends BillAssociatorResource<BaseBillAssociator> implements
 		DelegatingSubclassHandler<BaseBillAssociator, BaseBillAssociator> {
 
 	@Override
