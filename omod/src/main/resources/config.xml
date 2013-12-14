@@ -61,6 +61,7 @@
 	<mappingFiles>
 		BillAssociator.hbm.xml
 		SimpleNewBillAssociator.hbm.xml
+		LatestPendingBillAssociator.hbm.xml
 	</mappingFiles>
 
 	<!-- Internationalization -->

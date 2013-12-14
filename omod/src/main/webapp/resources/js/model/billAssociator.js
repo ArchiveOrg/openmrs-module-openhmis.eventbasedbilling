@@ -57,6 +57,17 @@ define(
             }
         });
 
+        openhmis.LatestPendingBillAssociator = openhmis.BillAssociator.extend({
+            meta: {
+                name: __("Latest Pending Bill Associator"),
+                openmrsType: 'metadata',
+                restUrl: 'v2/eventbasedbilling/latestpendingbillassociators'
+            },
+            
+            initialize: function(attrs, options) {
+            	this.set("type", "LatestPendingBillAssociator", { silent: true });
+            }
+        });
 
         return openhmis;
     }

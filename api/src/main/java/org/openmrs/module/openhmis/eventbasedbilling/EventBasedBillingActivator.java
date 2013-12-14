@@ -20,7 +20,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.DaemonToken;
 import org.openmrs.module.DaemonTokenAware;
 import org.openmrs.module.ModuleActivator;
-import org.openmrs.module.openhmis.eventbasedbilling.api.BillingHandlerEventListenerFactory;
+import org.openmrs.module.openhmis.eventbasedbilling.api.EventListenerFactory;
 import org.openmrs.module.openhmis.eventbasedbilling.api.IEventBasedBillingOptionsService;
 import org.openmrs.module.openhmis.eventbasedbilling.api.util.EventHelper;
 
@@ -59,6 +59,8 @@ public class EventBasedBillingActivator implements ModuleActivator, DaemonTokenA
 		log.info("Event Based Billing Module started");
 		if (Context.getService(IEventBasedBillingOptionsService.class).getOptions().isEnabled())
 			EventHelper.bindListenerForAllHandlers();
+		
+		EventHelper.bindNewBillingHandlerListener();
 	}
 	
 	/**
@@ -67,6 +69,7 @@ public class EventBasedBillingActivator implements ModuleActivator, DaemonTokenA
 	public void willStop() {
 		log.info("Stopping Event Based Billing Module");
 		EventHelper.unbindListenerForAllHandlers();
+		EventHelper.unbindNewBillingHandlerListener();
 	}
 	
 	/**
@@ -78,7 +81,7 @@ public class EventBasedBillingActivator implements ModuleActivator, DaemonTokenA
 
 	@Override
 	public void setDaemonToken(DaemonToken token) {
-		BillingHandlerEventListenerFactory.setDaemonToken(token);
+		EventListenerFactory.setDaemonToken(token);
 	}
 		
 }

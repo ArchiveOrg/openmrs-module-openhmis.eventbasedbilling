@@ -29,11 +29,9 @@ public class SimpleNewBillAssociator extends BaseBillAssociator {
 	public Bill associateItemsToBill(List<BillLineItem> lineItems, IBillAssociationContext context) {
 		Bill bill = new Bill();
 		bill.setStatus(BillStatus.PENDING);
-		Integer itemOrder = 0;
-		for (BillLineItem lineItem : lineItems) {
-			lineItem.setLineItemOrder(itemOrder++);
-			bill.addLineItem(lineItem);
-		}
+
+		addLineItemsToBill(lineItems, bill);
+		
 		bill.setPatient(context.getPatient());
 		bill.setCashier(context.getProvider());
 		bill.setCashPoint(context.getCashPoint());

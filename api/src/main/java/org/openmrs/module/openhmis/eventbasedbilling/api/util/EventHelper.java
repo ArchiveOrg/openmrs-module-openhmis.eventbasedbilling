@@ -11,9 +11,10 @@ import org.openmrs.module.openhmis.billableobjects.api.model.IBillableObject;
 import org.openmrs.module.openhmis.billableobjects.api.model.IBillingHandler;
 import org.openmrs.module.openhmis.billableobjects.api.util.BillableObjectsHelper;
 import org.openmrs.module.openhmis.billableobjects.api.util.BillingHandlerHelper;
-import org.openmrs.module.openhmis.eventbasedbilling.api.BillingHandlerEventListenerFactory;
+import org.openmrs.module.openhmis.eventbasedbilling.api.EventListenerFactory;
 
 public class EventHelper {
+	private static Set<Class<? extends IBillingHandler>> billingHandlerClasses;
 	private static Set<Class<? extends IBillableObject>> handledBillabledObjectClasses =
 			new HashSet<Class<? extends IBillableObject>>();
 	
@@ -28,7 +29,7 @@ public class EventHelper {
 				Class<? extends IBillableObject> billableObjectType = BillableObjectsHelper.getBillableObjectTypeForClassName(handledClass.getName());
 				if (billableObjectType == null)
 					throw new APIException("Couldn't find a class extending " + IBillableObject.class.getSimpleName() + " for " + handledClass.getSimpleName() + ".");
-				BillingHandlerEventListener<OpenmrsObject> listener = BillingHandlerEventListenerFactory.getInstance();
+				BillingHandlerEventListener<OpenmrsObject> listener = EventListenerFactory.getBillingHandlerEventListenerInstance();
 				listener.registerHandler(billableObjectType.getName(), handler);
 				handledBillabledObjectClasses.add(billableObjectType);
 				Event.subscribe(
@@ -41,7 +42,7 @@ public class EventHelper {
 	}
 	
 	public static void unbindListenerForAllHandlers() {
-		BillingHandlerEventListener listener = BillingHandlerEventListenerFactory.getInstance();
+		BillingHandlerEventListener listener = EventListenerFactory.getBillingHandlerEventListenerInstance();
 		Class<?>[] registeredClasses = new Class<?>[handledBillabledObjectClasses.size()];
 		handledBillabledObjectClasses.toArray(registeredClasses);
 		for (Class<?> cls : registeredClasses) {
@@ -53,5 +54,29 @@ public class EventHelper {
 			);
 			handledBillabledObjectClasses.remove(cls);
 		}
+	}
+	
+	public static void bindNewBillingHandlerListener() {
+		for (Class<? extends IBillingHandler> cls : getBillingHandlerClasses()) {
+			Event.subscribe(cls, Action.CREATED.toString(), EventListenerFactory.getNewBillingHandlerListenerInstance());
+			Event.subscribe(cls, Action.RETIRED.toString(), EventListenerFactory.getNewBillingHandlerListenerInstance());
+			Event.subscribe(cls, Action.UNRETIRED.toString(), EventListenerFactory.getNewBillingHandlerListenerInstance());
+			Event.subscribe(cls, Action.PURGED.toString(), EventListenerFactory.getNewBillingHandlerListenerInstance());
+		}
+	}
+	
+	public static void unbindNewBillingHandlerListener() {
+		for (Class<? extends IBillingHandler> cls : getBillingHandlerClasses()) {
+			Event.unsubscribe(cls, Action.CREATED, EventListenerFactory.getNewBillingHandlerListenerInstance());
+			Event.unsubscribe(cls, Action.RETIRED, EventListenerFactory.getNewBillingHandlerListenerInstance());
+			Event.unsubscribe(cls, Action.UNRETIRED, EventListenerFactory.getNewBillingHandlerListenerInstance());
+			Event.unsubscribe(cls, Action.PURGED, EventListenerFactory.getNewBillingHandlerListenerInstance());
+		}
+	}
+
+	private static Set<Class<? extends IBillingHandler>> getBillingHandlerClasses() {
+		if (billingHandlerClasses == null)
+			billingHandlerClasses = BillableObjectsHelper.locateHandlers();
+		return billingHandlerClasses;
 	}
 }

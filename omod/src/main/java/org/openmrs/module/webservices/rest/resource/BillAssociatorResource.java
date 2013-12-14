@@ -40,6 +40,16 @@ public class BillAssociatorResource<T extends IBillAssociator> extends BaseRestM
 		throw new NotImplementedException(NEED_SUBCLASS_HANDLER);
 	}
 	
+	// Default for implementing subclass resources
+	public Class<BaseBillAssociator> getSuperclass() {
+		return BaseBillAssociator.class;
+	}
+
+	// Default for implementing subclass resources
+	public Class<BaseBillAssociator> getSubclassHandled() {
+		return BaseBillAssociator.class;
+	}
+	
 	@PropertySetter("type")
 	public void setHandlerType(T instance, String type) {
 		// Allow this property to be silently ignored

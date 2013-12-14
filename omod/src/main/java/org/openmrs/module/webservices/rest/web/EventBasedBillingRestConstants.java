@@ -7,4 +7,5 @@ public class EventBasedBillingRestConstants {
 	
     public static final String ASSOCIATOR_RESOURCE = MODULE_REST_ROOT + "associators";
     public static final String SIMPLE_NEW_ASSOCIATOR_RESOURCE = MODULE_REST_ROOT + "simplenewbillassociators";
+    public static final String LATEST_PENDING_ASSOCIATOR_RESOURCE = MODULE_REST_ROOT + "latestpendingbillassociators";
 }
