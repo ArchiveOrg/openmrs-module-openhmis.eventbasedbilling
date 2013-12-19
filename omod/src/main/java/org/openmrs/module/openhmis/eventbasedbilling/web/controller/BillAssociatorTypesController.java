@@ -3,7 +3,8 @@ package org.openmrs.module.openhmis.eventbasedbilling.web.controller;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openmrs.module.openhmis.eventbasedbilling.api.impl.BillAssociatorServiceImpl;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.openhmis.eventbasedbilling.api.IBillAssociatorDataService;
 import org.openmrs.module.openhmis.eventbasedbilling.web.EventBasedBillingWebConstants;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +18,7 @@ public class BillAssociatorTypesController {
 	@ResponseBody
 	public Map<String, Object> typeNames() {
 		Map<String, Object> result = new HashMap<String, Object>();
-		result.put("results", BillAssociatorServiceImpl.getAssociatorClassNames());
+		result.put("results", Context.getService(IBillAssociatorDataService.class).getAssociatorClassNames());
 		return result;
 	}
 }

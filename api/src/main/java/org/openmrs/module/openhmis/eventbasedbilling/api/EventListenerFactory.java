@@ -14,6 +14,7 @@ public class EventListenerFactory {
 
 	private EventListenerFactory() { /* private constructor */ }
 	
+	@SuppressWarnings("unchecked")
 	public static <T> T getInstance(Class<T> instanceType) {
 		if (instanceType == null)
 			throw new APIException("Instance type cannot be null.");
