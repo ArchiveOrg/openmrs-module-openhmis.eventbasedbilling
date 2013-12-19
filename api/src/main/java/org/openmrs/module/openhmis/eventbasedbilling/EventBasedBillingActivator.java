@@ -21,8 +21,8 @@ import org.openmrs.module.DaemonToken;
 import org.openmrs.module.DaemonTokenAware;
 import org.openmrs.module.ModuleActivator;
 import org.openmrs.module.openhmis.eventbasedbilling.api.EventListenerFactory;
+import org.openmrs.module.openhmis.eventbasedbilling.api.IBillingEventService;
 import org.openmrs.module.openhmis.eventbasedbilling.api.IEventBasedBillingOptionsService;
-import org.openmrs.module.openhmis.eventbasedbilling.api.util.EventHelper;
 
 /**
  * This class contains the logic that is run every time this module is either started or stopped.
@@ -57,10 +57,11 @@ public class EventBasedBillingActivator implements ModuleActivator, DaemonTokenA
 	 */
 	public void started() {
 		log.info("Event Based Billing Module started");
+		IBillingEventService service = Context.getService(IBillingEventService.class);
 		if (Context.getService(IEventBasedBillingOptionsService.class).getOptions().isEnabled())
-			EventHelper.bindListenerForAllHandlers();
+			service.rebindListenerForAllHandlers();
 		
-		EventHelper.bindNewBillingHandlerListener();
+		service.bindNewBillingHandlerListener();
 	}
 	
 	/**
@@ -68,8 +69,9 @@ public class EventBasedBillingActivator implements ModuleActivator, DaemonTokenA
 	 */
 	public void willStop() {
 		log.info("Stopping Event Based Billing Module");
-		EventHelper.unbindListenerForAllHandlers();
-		EventHelper.unbindNewBillingHandlerListener();
+		IBillingEventService service = Context.getService(IBillingEventService.class);
+		service.unbindListenerForAllHandlers();
+		service.unbindNewBillingHandlerListener();
 	}
 	
 	/**

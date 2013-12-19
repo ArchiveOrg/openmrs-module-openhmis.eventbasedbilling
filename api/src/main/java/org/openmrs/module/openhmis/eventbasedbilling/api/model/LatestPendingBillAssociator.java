@@ -15,10 +15,18 @@ import org.openmrs.module.openhmis.eventbasedbilling.api.IBillAssociationContext
 public class LatestPendingBillAssociator extends BaseBillAssociator {
 	Integer id;
 
+	/**
+	 * Associate items to the latest pending bill for the context's patient.
+	 * If no pending bill is found, use SimpleNewBillAssociator to create a new
+	 * bill.
+	 * 
+	 * @should use the latest pending bill for the specified patient
+	 */
 	@Override
 	public Bill associateItemsToBill(List<BillLineItem> lineItems, IBillAssociationContext context) {
 		BillSearch search = new BillSearch();
 		search.getTemplate().setStatus(BillStatus.PENDING);
+		search.getTemplate().setPatient(context.getPatient());
 		List<Bill> pendingBills = Context.getService(IBillService.class).findBills(search);
 		
 		if (pendingBills.size() > 0) {

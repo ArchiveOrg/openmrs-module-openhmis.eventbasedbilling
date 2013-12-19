@@ -29,6 +29,14 @@
 	<bean parent="serviceContext">
 		<property name="moduleService">
 			<list merge="true">
+				<value>org.openmrs.module.openhmis.eventbasedbilling.api.IBillingEventService</value>
+				<ref bean="billingEventService" />
+			</list>
+		</property>
+	</bean>
+	<bean parent="serviceContext">
+		<property name="moduleService">
+			<list merge="true">
 				<value>org.openmrs.module.openhmis.eventbasedbilling.api.IEventBasedBillingOptionsService</value>
 				<ref bean="optionsService" />
 			</list>
@@ -46,6 +54,7 @@
 		<property name="preInterceptors" ref="serviceInterceptors" />
 		<property name="transactionAttributeSource" ref="transactionAttributeSource" />
 	</bean>
+	<bean id="billingEventService" class="org.openmrs.module.openhmis.eventbasedbilling.api.impl.BillingEventServiceImpl" />
 	<bean id="optionsService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="target">

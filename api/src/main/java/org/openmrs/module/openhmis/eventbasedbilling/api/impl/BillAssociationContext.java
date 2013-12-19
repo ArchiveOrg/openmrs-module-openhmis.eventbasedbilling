@@ -2,7 +2,7 @@ package org.openmrs.module.openhmis.eventbasedbilling.api.impl;
 
 import org.openmrs.Patient;
 import org.openmrs.Provider;
-import org.openmrs.module.openhmis.billableobjects.api.model.IBillableObject;
+import org.openmrs.module.openhmis.billableobjects.api.type.IBillableObject;
 import org.openmrs.module.openhmis.cashier.api.model.CashPoint;
 import org.openmrs.module.openhmis.eventbasedbilling.api.IBillAssociationContext;
 
@@ -16,9 +16,10 @@ public class BillAssociationContext implements IBillAssociationContext {
 	public BillAssociationContext() {
 	}
 	
-	public BillAssociationContext(Patient patient, Provider provider, IBillableObject<?> objectBilledFor) {
+	public BillAssociationContext(Patient patient, Provider provider, CashPoint cashPoint, IBillableObject<?> objectBilledFor) {
 		this.patient = patient;
 		this.provider = provider;
+		this.cashPoint = cashPoint;
 		this.billableObject = objectBilledFor;
 	}
 

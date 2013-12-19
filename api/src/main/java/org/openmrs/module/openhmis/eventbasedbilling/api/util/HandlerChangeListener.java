@@ -5,15 +5,17 @@ import javax.jms.MapMessage;
 import javax.jms.Message;
 
 import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.event.EventListener;
 import org.openmrs.module.DaemonToken;
+import org.openmrs.module.openhmis.eventbasedbilling.api.IBillingEventService;
 
-public class NewBillingHandlerListener implements EventListener, Runnable {
+public class HandlerChangeListener implements EventListener, Runnable {
 	private String lastMessageHandled;
 	private DaemonToken daemonToken;
 	
-	public NewBillingHandlerListener(DaemonToken token) {
+	public HandlerChangeListener(DaemonToken token) {
 		if (token == null)
 			throw new APIException("Daemon token cannot be null.");
 		this.daemonToken = token;
@@ -38,6 +40,6 @@ public class NewBillingHandlerListener implements EventListener, Runnable {
 	
 	@Override
 	public void run() {
-		EventHelper.bindListenerForAllHandlers();
+		Context.getService(IBillingEventService.class).rebindListenerForAllHandlers();
 	}
 }

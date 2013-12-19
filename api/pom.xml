@@ -89,6 +89,11 @@
 			<type>jar</type>
 		</dependency>
 		
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4-rule-agent</artifactId>
+			<scope>test</scope>
+		</dependency>
 				
 	</dependencies>
 	

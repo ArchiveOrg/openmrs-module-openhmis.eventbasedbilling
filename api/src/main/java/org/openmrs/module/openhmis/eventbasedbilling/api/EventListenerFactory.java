@@ -1,31 +1,37 @@
 package org.openmrs.module.openhmis.eventbasedbilling.api;
 
 import org.openmrs.OpenmrsObject;
+import org.openmrs.api.APIException;
 import org.openmrs.module.DaemonToken;
-import org.openmrs.module.openhmis.eventbasedbilling.api.util.BillingHandlerEventListener;
-import org.openmrs.module.openhmis.eventbasedbilling.api.util.NewBillingHandlerListener;
+import org.openmrs.module.openhmis.eventbasedbilling.api.util.BillableObjectEventListener;
+import org.openmrs.module.openhmis.eventbasedbilling.api.util.HandlerChangeListener;
 
 public class EventListenerFactory {
-	private static volatile BillingHandlerEventListener<OpenmrsObject> billingHandlerEventListener;
-	private static volatile NewBillingHandlerListener newBillingHandlerListener;
-	private static DaemonToken daemonToken; 
+	private static volatile BillableObjectEventListener<OpenmrsObject> billableObjectEventListener;
+	private static volatile HandlerChangeListener handlerChangeListener;
+	// set a default token so that tests don't fail
+	private static DaemonToken daemonToken = new DaemonToken("default");
 
-	private EventListenerFactory() { /* no constructor */ }
+	private EventListenerFactory() { /* private constructor */ }
 	
-	public static BillingHandlerEventListener<OpenmrsObject> getBillingHandlerEventListenerInstance() {
-		if (billingHandlerEventListener == null)
-			billingHandlerEventListener = new BillingHandlerEventListener<OpenmrsObject>(daemonToken);
-		return billingHandlerEventListener;
-	}
-	
-	public static NewBillingHandlerListener getNewBillingHandlerListenerInstance() {
-		if (newBillingHandlerListener == null)
-			newBillingHandlerListener = new NewBillingHandlerListener(daemonToken);
-		return newBillingHandlerListener;
+	public static <T> T getInstance(Class<T> instanceType) {
+		if (instanceType == null)
+			throw new APIException("Instance type cannot be null.");
+
+		if (instanceType == BillableObjectEventListener.class) {
+			if (billableObjectEventListener == null)
+				billableObjectEventListener = new BillableObjectEventListener<OpenmrsObject>(daemonToken);
+			return (T) billableObjectEventListener;
+		}
+		if (instanceType == HandlerChangeListener.class) {
+			if (handlerChangeListener == null)
+				handlerChangeListener = new HandlerChangeListener(daemonToken);
+			return (T) handlerChangeListener;
+		}
+		throw new APIException(EventListenerFactory.class.getSimpleName() + " does not handle " + instanceType.getSimpleName());
 	}
 	
 	public static void setDaemonToken(DaemonToken token) {
-		if (daemonToken == null)
-			daemonToken = token;
+		daemonToken = token;
 	}
 }

@@ -6,14 +6,15 @@ import org.apache.log4j.Logger;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.openhmis.cashier.api.ICashPointService;
 import org.openmrs.module.openhmis.cashier.api.model.CashPoint;
 import org.openmrs.module.openhmis.eventbasedbilling.api.IBillAssociatorDataService;
+import org.openmrs.module.openhmis.eventbasedbilling.api.IBillingEventService;
 import org.openmrs.module.openhmis.eventbasedbilling.api.IEventBasedBillingOptionsService;
 import org.openmrs.module.openhmis.eventbasedbilling.api.model.EventBasedBillingOptions;
 import org.openmrs.module.openhmis.eventbasedbilling.api.model.IBillAssociator;
-import org.openmrs.module.openhmis.eventbasedbilling.api.util.EventHelper;
 import org.openmrs.module.openhmis.eventbasedbilling.web.EventBasedBillingWebConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -52,10 +53,11 @@ public class EventBasedBillingOptionsServiceGpImpl extends BaseOpenmrsService
 		
 		// Bind or unbind listeners according to new enabled setting
 		boolean isCurrentlyEnabled = loadIsEnabled();
+		IBillingEventService service = Context.getService(IBillingEventService.class);
 		if (options.isEnabled() && !isCurrentlyEnabled)
-			EventHelper.bindListenerForAllHandlers();
+			service.rebindListenerForAllHandlers();
 		else if (!options.isEnabled() && isCurrentlyEnabled)
-			EventHelper.unbindListenerForAllHandlers();
+			service.unbindListenerForAllHandlers();
 		
 		GlobalProperty associatorIdProp = new GlobalProperty(EventBasedBillingWebConstants.ASSOCIATOR_ID_PROPERTY);
 		if (options.getBillAssociator() == null || options.getBillAssociator().getId() == null)

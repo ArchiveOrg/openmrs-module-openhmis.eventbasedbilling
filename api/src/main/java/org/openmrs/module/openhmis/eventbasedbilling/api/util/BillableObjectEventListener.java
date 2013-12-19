@@ -22,9 +22,8 @@ import org.openmrs.api.context.Daemon;
 import org.openmrs.event.EventListener;
 import org.openmrs.module.DaemonToken;
 import org.openmrs.module.openhmis.billableobjects.api.IBillableObjectDataService;
-import org.openmrs.module.openhmis.billableobjects.api.model.IBillableObject;
 import org.openmrs.module.openhmis.billableobjects.api.model.IBillingHandler;
-import org.openmrs.module.openhmis.billableobjects.api.util.BillableObjectEventListener;
+import org.openmrs.module.openhmis.billableobjects.api.type.IBillableObject;
 import org.openmrs.module.openhmis.billableobjects.api.util.BillingHandlerRecoverableException;
 import org.openmrs.module.openhmis.cashier.api.model.Bill;
 import org.openmrs.module.openhmis.cashier.api.model.BillLineItem;
@@ -35,21 +34,28 @@ import org.openmrs.module.openhmis.eventbasedbilling.api.model.EventBasedBilling
 import org.openmrs.module.openhmis.eventbasedbilling.api.model.IBillAssociator;
 import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertRecipient;
-import org.openmrs.notification.MessageException;
 
-public class BillingHandlerEventListener<T extends OpenmrsObject> implements EventListener {
+public class BillableObjectEventListener<T extends OpenmrsObject> implements EventListener {
 	private static final Logger logger = Logger.getLogger(BillableObjectEventListener.class);
 	private DaemonToken daemonToken;
 	private Map<String, Set<IBillingHandler<T>>> billableObjectClassNameToHandlerSetMap = 
 			new HashMap<String, Set<IBillingHandler<T>>>();
 
-	public BillingHandlerEventListener(DaemonToken token) {
+	public BillableObjectEventListener(DaemonToken token) {
 		if (token == null)
 			throw new APIException("The DaemonToken cannot be null.");
 
 		daemonToken = token;
 	}
 
+	/**
+	 * Register a billing handler for an IBillableObject class, allowing
+	 * this event listener to properly dispatch events for specified
+	 * billable object type.
+	 * 
+	 * @param billableObjetClassName Class name of IBillableObject
+	 * @param handler Handler class for the billable object
+	 */
 	public void registerHandler(String billableObjetClassName, IBillingHandler<T> handler) {
 		Set<IBillingHandler<T>> handlerSet = billableObjectClassNameToHandlerSetMap.get(billableObjetClassName);
 		if (handlerSet == null) {
@@ -59,6 +65,14 @@ public class BillingHandlerEventListener<T extends OpenmrsObject> implements Eve
 		handlerSet.add(handler);
 	}
 	
+	/**
+	 * Unregister a particular handler for an IBillableObject class, after
+	 * which events for the given class name will no longer be dispatched by
+	 * the event listener.
+	 *  
+	 * @param billableObjetClassName Class name of IBillableObject
+	 * @param handler Handler class for the billable object
+	 */
 	public void unregisterHandler(String billableObjetClassName, IBillingHandler<T> handler) {
 		Set<IBillingHandler<T>> handlerSet = billableObjectClassNameToHandlerSetMap.get(billableObjetClassName);
 		if (handlerSet == null)
@@ -66,6 +80,11 @@ public class BillingHandlerEventListener<T extends OpenmrsObject> implements Eve
 		handlerSet.remove(handler);
 	}
 	
+	/**
+	 * Unregister all handlers for the given IBillableObject class.
+	 * 
+	 * @param billableObjetClassName Class name of IBillableObject
+	 */
 	public void unregisterHandler(String billableObjetClassName) {
 		billableObjectClassNameToHandlerSetMap.remove(billableObjetClassName);
 	}
@@ -98,7 +117,7 @@ public class BillingHandlerEventListener<T extends OpenmrsObject> implements Eve
 		}
 
 		@Override
-		public void run() {
+		public void run() { 
 			try {
 				MapMessage mapMessage = (MapMessage) message;
 				String uuid = mapMessage.getString("uuid");

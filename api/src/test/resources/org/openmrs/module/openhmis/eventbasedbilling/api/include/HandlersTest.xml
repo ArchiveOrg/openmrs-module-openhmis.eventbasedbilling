@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+	<billableobj_handler handler_id="0" name="test Encounter Handler" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="ef93c695-ac43-450a-93f8-4b2b4d50a3c8" />
+	<billableobj_handler_encounter handler_id="0" encounter_type_id="1" />
+	<billableobj_handler_encounter_item handler_id="0" item_id="0" />
+
+	<billableobj_handler handler_id="1" name="test DrugOrder Handler" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="812a24d9-ab19-4470-a04a-b0178c21fb54" />
+	<billableobj_handler_drugorder handler_id="1" />	
+</dataset>

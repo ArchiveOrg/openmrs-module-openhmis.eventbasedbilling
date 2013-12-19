@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+	<eventbill_associator associator_id="0" associator_type="SIMPLE_NEW" name="test associator" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="ef93c695-ac43-450a-93f8-4b2b4d50a3c8" />
+	<eventbill_associator associator_id="1" associator_type="LATEST_PENDING" name="test latest associator" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="812a24d9-ab19-4470-a04a-b0178c21fb54" />
+</dataset>

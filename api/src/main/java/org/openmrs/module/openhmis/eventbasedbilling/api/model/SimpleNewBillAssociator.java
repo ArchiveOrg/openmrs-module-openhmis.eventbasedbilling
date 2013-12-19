@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.openmrs.api.context.Context;
 import org.openmrs.module.openhmis.billableobjects.api.IBillableObjectDataService;
-import org.openmrs.module.openhmis.billableobjects.api.model.IBillableObject;
 import org.openmrs.module.openhmis.billableobjects.api.type.BaseBillableObject;
+import org.openmrs.module.openhmis.billableobjects.api.type.IBillableObject;
 import org.openmrs.module.openhmis.cashier.api.IBillService;
 import org.openmrs.module.openhmis.cashier.api.model.Bill;
 import org.openmrs.module.openhmis.cashier.api.model.BillLineItem;
