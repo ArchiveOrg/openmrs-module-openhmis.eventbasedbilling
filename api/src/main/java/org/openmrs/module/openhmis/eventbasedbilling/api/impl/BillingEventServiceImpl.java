@@ -32,22 +32,16 @@ public class BillingEventServiceImpl extends BaseOpenmrsService implements IBill
 	private static BillableObjectEventListener<OpenmrsObject> objectEventListener;
 	private static HandlerChangeListener handlerChangeListener;
 	
-	public BillingEventServiceImpl() {
-		BillingEventServiceImpl.billableObjectsService = Context.getService(IBillableObjectsService.class);
-		BillingEventServiceImpl.billingHandlerService = Context.getService(IBillingHandlerService.class);
-		BillingEventServiceImpl.objectEventListener = EventListenerFactory.getInstance(BillableObjectEventListener.class);
-		BillingEventServiceImpl.handlerChangeListener = EventListenerFactory.getInstance(HandlerChangeListener.class);
-	}
-	
+	@Override
 	public void rebindListenerForAllHandlers() {
 		unbindListenerForAllHandlers();
 		for (Class<?> handledClass : Context.getService(IBillingHandlerService.class).getActivelyHandledClasses()) {
-			Set<IBillingHandler<?>> handlers = billingHandlerService.getHandlersForClassName(handledClass.getName());
+			Set<IBillingHandler<?>> handlers = getBillingHandlerService().getHandlersForClassName(handledClass.getName());
 			for (IBillingHandler handler : handlers) {
-				Class<? extends IBillableObject> billableObjectType = billableObjectsService.getBillableObjectClassForClassName(handledClass.getName());
+				Class<? extends IBillableObject> billableObjectType = getBillableObjectsService().getBillableObjectClassForClassName(handledClass.getName());
 				if (billableObjectType == null)
 					throw new APIException("Couldn't find a class extending " + IBillableObject.class.getSimpleName() + " for " + handledClass.getSimpleName() + ".");
-				objectEventListener.registerHandler(billableObjectType.getName(), handler);
+				getObjectEventListener().registerHandler(billableObjectType.getName(), handler);
 				handledBillabledObjectClasses.add(billableObjectType);
 				Event.subscribe(
 						billableObjectType,
@@ -58,15 +52,16 @@ public class BillingEventServiceImpl extends BaseOpenmrsService implements IBill
 		}
 	}
 	
+	@Override
 	public void unbindListenerForAllHandlers() {
 		Class<?>[] registeredClasses = new Class<?>[handledBillabledObjectClasses.size()];
 		handledBillabledObjectClasses.toArray(registeredClasses);
 		for (Class<?> cls : registeredClasses) {
-			objectEventListener.unregisterHandler(cls.getName());
+			getObjectEventListener().unregisterHandler(cls.getName());
 			Event.unsubscribe(
 					cls,
 					Action.CREATED,
-					objectEventListener
+					getObjectEventListener()
 			);
 			handledBillabledObjectClasses.remove(cls);
 		}
@@ -79,17 +74,19 @@ public class BillingEventServiceImpl extends BaseOpenmrsService implements IBill
 		Action.PURGED
 	));
 	
-	public void bindNewBillingHandlerListener() {
-		for (Class<? extends IBillingHandler> cls : billingHandlerService.getBillingHandlerClasses()) {
+	@Override
+	public void bindBillingHandlerChangeListener() {
+		for (Class<? extends IBillingHandler> cls : getBillingHandlerService().getBillingHandlerClasses()) {
 			for (Action action : handlerChangeEvents) 
-				Event.subscribe(cls, action.toString(), handlerChangeListener);
+				Event.subscribe(cls, action.toString(), getHandlerChangeListener());
 		}
 	}
 	
-	public void unbindNewBillingHandlerListener() {
-		for (Class<? extends IBillingHandler> cls : billingHandlerService.getBillingHandlerClasses()) {
+	@Override
+	public void unbindBillingHandlerChangeListener() {
+		for (Class<? extends IBillingHandler> cls : getBillingHandlerService().getBillingHandlerClasses()) {
 			for (Action action : handlerChangeEvents) 
-				Event.unsubscribe(cls, action, handlerChangeListener);
+				Event.unsubscribe(cls, action, getHandlerChangeListener());
 		}
 	}
 
@@ -97,6 +94,8 @@ public class BillingEventServiceImpl extends BaseOpenmrsService implements IBill
 	
 	@Override
 	public IBillingHandlerService getBillingHandlerService() {
+		if (billingHandlerService == null)
+			billingHandlerService = Context.getService(IBillingHandlerService.class);
 		return billingHandlerService;
 	}
 	@Override
@@ -105,6 +104,8 @@ public class BillingEventServiceImpl extends BaseOpenmrsService implements IBill
 	}
 	@Override
 	public IBillableObjectsService getBillableObjectsService() {
+		if (billableObjectsService == null)
+			billableObjectsService = Context.getService(IBillableObjectsService.class);
 		return billableObjectsService;
 	}
 	@Override
@@ -112,15 +113,19 @@ public class BillingEventServiceImpl extends BaseOpenmrsService implements IBill
 		BillingEventServiceImpl.billableObjectsService = billableObjectsService;
 	}
 	@Override
-	public BillableObjectEventListener<OpenmrsObject> getEventListener() {
+	public BillableObjectEventListener<OpenmrsObject> getObjectEventListener() {
+		if (objectEventListener == null)
+			objectEventListener = EventListenerFactory.getInstance(BillableObjectEventListener.class);
 		return objectEventListener;
 	}
 	@Override
-	public  void setEventListener(BillableObjectEventListener<OpenmrsObject> eventListener) {
+	public  void setObjectEventListener(BillableObjectEventListener<OpenmrsObject> eventListener) {
 		BillingEventServiceImpl.objectEventListener = eventListener;
 	}
 	@Override
 	public HandlerChangeListener getHandlerChangeListener() {
+		if (handlerChangeListener == null)
+			handlerChangeListener = EventListenerFactory.getInstance(HandlerChangeListener.class);
 		return handlerChangeListener;
 	}
 	@Override

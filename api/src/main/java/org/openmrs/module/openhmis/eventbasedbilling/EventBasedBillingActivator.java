@@ -61,7 +61,7 @@ public class EventBasedBillingActivator implements ModuleActivator, DaemonTokenA
 		if (Context.getService(IEventBasedBillingOptionsService.class).getOptions().isEnabled())
 			service.rebindListenerForAllHandlers();
 		
-		service.bindNewBillingHandlerListener();
+		service.bindBillingHandlerChangeListener();
 	}
 	
 	/**
@@ -71,7 +71,7 @@ public class EventBasedBillingActivator implements ModuleActivator, DaemonTokenA
 		log.info("Stopping Event Based Billing Module");
 		IBillingEventService service = Context.getService(IBillingEventService.class);
 		service.unbindListenerForAllHandlers();
-		service.unbindNewBillingHandlerListener();
+		service.unbindBillingHandlerChangeListener();
 	}
 	
 	/**

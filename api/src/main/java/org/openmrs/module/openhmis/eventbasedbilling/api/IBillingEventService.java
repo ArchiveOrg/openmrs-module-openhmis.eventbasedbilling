@@ -22,19 +22,19 @@ public interface IBillingEventService extends OpenmrsService {
 	/**
 	 * Bind HandlerChangeListener to billing handler change events
 	 */
-	void bindNewBillingHandlerListener();
+	void bindBillingHandlerChangeListener();
 	
 	/**
 	 * Unbind HandlerChangeListener from billing handler change events
 	 */
-	void unbindNewBillingHandlerListener();
+	void unbindBillingHandlerChangeListener();
 	
 	IBillingHandlerService getBillingHandlerService();
 	void setBillingHandlerService(IBillingHandlerService billableObjectsService);
 	IBillableObjectsService getBillableObjectsService();
 	void setBillableObjectsService(IBillableObjectsService billableObjectsService);
-	BillableObjectEventListener<OpenmrsObject> getEventListener();
-	void setEventListener(BillableObjectEventListener<OpenmrsObject> eventListener);
+	BillableObjectEventListener<OpenmrsObject> getObjectEventListener();
+	void setObjectEventListener(BillableObjectEventListener<OpenmrsObject> eventListener);
 	HandlerChangeListener getHandlerChangeListener();
 	void setHandlerChangeListener(HandlerChangeListener handlerChangeListener);
 }
