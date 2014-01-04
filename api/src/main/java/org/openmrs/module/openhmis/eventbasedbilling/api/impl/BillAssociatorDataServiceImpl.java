@@ -14,7 +14,7 @@ import org.openmrs.module.openhmis.commons.api.entity.security.IMetadataAuthoriz
 import org.openmrs.module.openhmis.eventbasedbilling.api.IBillAssociatorDataService;
 import org.openmrs.module.openhmis.eventbasedbilling.api.model.BaseBillAssociator;
 import org.openmrs.module.openhmis.eventbasedbilling.api.model.IBillAssociator;
-import org.openmrs.module.openhmis.inventory.api.security.BasicMetadataAuthorizationPrivileges;
+import org.openmrs.module.openhmis.eventbasedbilling.api.security.BasicMetadataAuthorizationPrivileges;
 import org.reflections.Reflections;
 
 public class BillAssociatorDataServiceImpl extends BaseMetadataDataServiceImpl<BaseBillAssociator>
